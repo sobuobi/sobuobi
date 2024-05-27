@@ -1,0 +1,95 @@
+/*****************************************************************************************************************
+NAME:    EC_IT143_W3.4_OS
+PURPOSE: Answers to AdventureWorks questions.
+
+MODIFICATION LOG:
+Ver      Date        Author        Description
+-----   ----------   -----------   -------------------------------------------------------------------------------
+1.0     05/23/2022   Samuel obuobi       1. Built this script for EC IT440
+
+
+RUNTIME: 
+Xm Xs
+
+NOTES: 
+This is my answer for assignment 3.4 Adventure Works: Create Answers. I have provided answers to the eight questions two mine and six from others.
+ 
+******************************************************************************************************************/
+/*Marginal complexity
+-- Q1:What is the total number of employees in AdventureWorks? - Opeyemi Omopariola question
+-- Ans: Single table query, uses the COUNT function.
+
+SELECT COUNT (BusinessEntityID) AS 'Total Employees'
+	FROM HumanResources.Employee;
+
+/* Marginal complexity
+-- Q2: How heavy (in lbs.) is the heaviest product we sell? - Sam Bingham question
+-- Ans: Single table query that uses the SELECT TOP, WHERE clauses and  ORDER BY keyword.  FYI, there are two items that weigh the most (different colors of the same bike).
+
+SELECT TOP (1)  Name,
+		WeightUnitMeasureCode,
+		Weight
+   FROM Production.Product
+  WHERE WeightUnitMeasureCode = 'LB'
+  ORDER BY Weight DESC;
+
+  /*Moderate complexity
+-- Q3: I am interested in production cost increases. Compare the current standard cost to the standard cost in 2013. Which ten products increased the most in price? - Sam Bingham question
+-- Ans: Multiple table query that uses an INNER JOIN and filters by date. Added other notes in the code. 
+
+SELECT  TOP (10) p.NAME, 
+		h.ProductID,
+		h.StandardCost,
+		p.StandardCost AS CurentCost,
+				((p.StandardCost) - (h.StandardCost)) AS 'Cost Difference'
+   FROM Production.ProductCostHistory AS h
+   JOIN Production.Product AS p
+	 ON p.ProductID = h.ProductID
+  WHERE h.StartDate > '2012-12-31' OR h.EndDate > '2012-12-31'
+	ORDER BY 'Cost Difference' DESC;
+
+	/*Moderate complexity
+-- Q4: I would like to know the sum of all benefit hours owed to staff through Human Resources, grouped by department. I define benefit hours as vacation hours + sick leave hours. - Ian Tavener question
+-- Ans: Multiple table query that uses two INNER JOINs needed the HumanResources.EmployeeDepartmentHistory table to link the two other tables.    
+
+SELECT  d.Name,
+		SUM(e.SickLeaveHours + e.VacationHours) AS 'Benefit Hours'
+   FROM HumanResources.Department AS d
+   JOIN HumanResources.EmployeeDepartmentHistory AS h
+     ON d.DepartmentID = h.DepartmentID
+   JOIN HumanResources.Employee AS e
+     ON h.BusinessEntityID = e.BusinessEntityID
+	GROUP BY d.Name;
+
+
+	/*Business User question
+--Q5: What are the training needs of our employees to meet future demands? Samuel Obuobi my question
+-- Ans: To determine employee training needs, align them with the organization's strategic goals and industry trends.
+Evaluate technical and soft skills, considering technological innovations, regulatory changes, and market shifts for future success.*/
+
+/* Increased complexity
+   Q6: We want to show appreciation for our biggest customers.  Can you give me a list of Customers who have spent the most in 2013.  Please include the country they are in 
+		so we can abide by all local laws on gifts.  - Scott Martinez question
+   Ans: This was the most complex of all of the questions (and it was my own).  I tried several different ways before deciding to create a view of the top 5 sales reps.
+		I had to then search for how to drop and recreate the view each time.  I also now know more about the GO command   */
+
+
+   /* Metadata 
+-- Q7: How many employees need training from the human resources department?
+--Ans: This is showing the department that need training.
+SELECT*
+from HumanResources.Department
+where GroupName = 'Research and Development';
+
+/*Metadata
+-- Q8: What 5 column name appears the most in the database? - Light U. Chigbu question
+-- Ans: For this I again used the System View INFORMATION_SCHEMA.COLUMNS.
+
+SELECT TOP (5) COLUMN_NAME,
+		Count(COLUMN_NAME) as Count  
+   FROM INFORMATION_SCHEMA.COLUMNS  
+	Group By COLUMN_NAME
+	Order By Count DESC;
+
+
+SELECT GETDATE() AS my_date;
